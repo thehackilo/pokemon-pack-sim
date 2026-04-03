@@ -106,7 +106,7 @@ export function generateCardProperties() {
    ═══════════════════════════════════════════════════ */
 
 export const GRADING_COST = 20; // $20 per submission
-export const GRADING_DURATION_MS = 15 * 1000; // 15 seconds for testing
+export const GRADING_DURATION_MS = 30 * 1000; // 30 seconds for immersion
 
 /** PSA grade multipliers on base market price */
 export const PSA_MULTIPLIERS = {
@@ -170,14 +170,14 @@ export function calculatePSAGrade(properties) {
   base += variance;
   
   // Hard caps:
-  // Rule 1: Any sub-grade below 5 caps the max at 7
+  // Rule 1: Any sub-grade below 5 caps the max at 7 (Heavily Off/Faded/Heavy Play)
   if (lowest < 5) base = Math.min(base, 7);
   
-  // Rule 2: PSA 10 requires ALL sub-grades at 9+
-  if (scores.some(s => s < 9)) base = Math.min(base, 9);
+  // Rule 2: Relaxed PSA 10 (Allow one 8.5 to still reach a 10 if others are 10)
+  if (scores.some(s => s < 8.5)) base = Math.min(base, 9);
   
-  // Rule 3: PSA 10 is still hard to get even with all 9+ (need avg 9.5+)
-  if (base >= 9.5 && avg < 9.5) base = 9;
+  // Rule 3: PSA 10 threshold (now 9.25 instead of 9.5)
+  if (base >= 9.25 && avg < 9.25) base = 9;
   
   // Round, clamp 1-10
   const grade = Math.max(1, Math.min(10, Math.round(base)));

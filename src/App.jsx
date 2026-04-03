@@ -3,6 +3,7 @@ import Collection from "./Collection.jsx";
 import CardDetailModal from "./CardDetailModal.jsx";
 import GradingTab from "./GradingTab.jsx";
 import AuthOverlay from "./AuthOverlay.jsx";
+import LeaderboardModal from "./LeaderboardModal.jsx";
 import { supabase } from "./supabaseClient.js";
 import { TC, RC, getMarketPrice, generateCardProperties, calculatePSAGrade,
   GRADING_COST, GRADING_DURATION_MS } from "./constants.js";
@@ -826,6 +827,7 @@ function LoadingSpinner({setInfo}) {
 let uidCounter = 0;
 
 export default function App(){
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [user, setUser] = useState(null);
   const userRef = useRef(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -1227,7 +1229,11 @@ export default function App(){
 
           <div style={{display:"flex", alignItems:"center", gap: 8}}>
             {user && (
-              <div style={{fontSize: 10, color: "#fff6", display: "flex", alignItems: "center", gap: 6}}>
+              <div style={{fontSize: 10, color: "#fff6", display: "flex", alignItems: "center", gap: 12}}>
+                <button onClick={() => setShowLeaderboard(true)} style={{ background: 'rgba(255, 215, 0, 0.1)', border: '1px solid rgba(255, 215, 0, 0.3)', color: '#FFD700', fontSize: 10, fontWeight: 800, padding: '4px 10px', borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  🏆 LEADERBOARD
+                </button>
+                <div style={{ height: 12, width: 1, background: '#fff2' }} />
                 <span style={{background: "#ffffff11", padding: "4px 8px", borderRadius: 12}}>
                   👤 {user.id === "guest" ? "Guest Vault" : user.email}
                 </span>
@@ -1333,6 +1339,7 @@ export default function App(){
       )}
 
       {detailCard && <CardDetailModal card={detailCard} onClose={() => setDetailCard(null)} />}
+      {showLeaderboard && <LeaderboardModal onClose={() => setShowLeaderboard(false)} />}
 
       <div style={{position:"fixed",bottom:10,left:"50%",transform:"translateX(-50%)",fontSize:9,color:"#fff15",letterSpacing:1}}>
         🔊 Sound on for full experience</div>

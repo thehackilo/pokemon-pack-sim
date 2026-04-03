@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { supabase } from './supabaseClient';
 
 export default function AuthOverlay({ onLogin }) {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,22 +26,57 @@ export default function AuthOverlay({ onLogin }) {
     setError(null);
     let authError = null;
 
+    // Build the internal email (mapping username to dummy domain if email is missing)
+    let finalEmail = email;
+    if (!email && username) {
+      // Internal dummy email mapping
+      finalEmail = `${username.toLowerCase().trim().replace(/[^a-z0-9]/g, '')}@packsim.user`;
+    }
+
     if (isSignUp) {
-      const { data, error: err } = await supabase.auth.signUp({ email, password });
-      authError = err;
-      if (!err && !data.session) {
-        // Supabase requires email verification by default
-        setError("Account created! Please check your email inbox to verify your account.");
+      if (!username) {
+        setError("Username is required for new accounts!");
         setLoading(false);
-        return; // Stop here so it doesn't unmount or hang
+        return;
+      }
+      
+      const { data, error: err } = await supabase.auth.signUp({ 
+        email: finalEmail, 
+        password,
+        options: {
+          data: { 
+            display_name: username 
+          }
+        }
+      });
+      authError = err;
+      
+      if (!err && data.user) {
+        // Create initial profile record with username
+        await supabase.from('profiles').upsert({
+          id: data.user.id,
+          username: username,
+          wallet: 25.00,
+          auto_sell_threshold: 0
+        });
+        
+        if (!data.session) {
+          setError("Account created! Please verify your email if provided, or try logging in now.");
+          setLoading(false);
+          return;
+        }
       }
     } else {
-      const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+      // Login attempt
+      const { error: err } = await supabase.auth.signInWithPassword({ 
+        email: finalEmail, 
+        password 
+      });
       authError = err;
     }
 
     if (authError) {
-      setError(authError.message);
+      setError(authError.message === "Invalid login credentials" ? "Invalid Username/Email or Password" : authError.message);
       setLoading(false);
     } else {
       // successful login triggers App.jsx session watcher
@@ -54,7 +90,7 @@ export default function AuthOverlay({ onLogin }) {
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
     }}>
       <div style={{
-        width: '100%', maxWidth: 400, padding: 32,
+        width: '100%', maxWidth: 400, padding: "32px 24px",
         background: 'linear-gradient(160deg, #161b2a, #10131f)',
         borderRadius: 24, border: '1px solid #ffffff11',
         boxShadow: '0 16px 64px #000a'
@@ -65,13 +101,13 @@ export default function AuthOverlay({ onLogin }) {
             textShadow: '0 0 20px #FFD70044'
           }}>POKÉMON PACK SIM</h2>
           <div style={{ fontSize: 13, color: '#fff6', marginTop: 8 }}>
-            Cloud Save & Online Collection
+            Join the Community Leaderboard
           </div>
         </div>
 
         {!isConfigured && (
           <div style={{ padding: 12, background: '#ef444422', border: '1px solid #ef444455', borderRadius: 8, color: '#ef4444', fontSize: 13, marginBottom: 16 }}>
-            <b>⚠️ Backend offline!</b> You must paste your Supabase keys in `.env.local` to use authentication.
+            <b>⚠️ Backend offline!</b> Authentication requires Supabase keys.
             <button onClick={() => onLogin({id: "guest"})} style={{ marginTop: 8, width: '100%', padding: 8, background: '#ef4444', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 700 }}>
               Bypass (Play Local Only)
             </button>
@@ -79,9 +115,23 @@ export default function AuthOverlay({ onLogin }) {
         )}
 
         <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {isSignUp ? (
+            <div>
+              <label style={{ display: 'block', fontSize: 11, color: '#fff6', fontWeight: 700, marginBottom: 6 }}>CHOOSE USERNAME</label>
+              <input type="text" required value={username} onChange={e => setUsername(e.target.value)} placeholder="Champion123"
+                style={{ width: '100%', padding: '12px 16px', background: '#ffffff0a', border: '1px solid #ffffff22', borderRadius: 12, color: '#fff', outline: 'none' }} />
+            </div>
+          ) : (
+             <div>
+              <label style={{ display: 'block', fontSize: 11, color: '#fff6', fontWeight: 700, marginBottom: 6 }}>USERNAME OR EMAIL</label>
+              <input type="text" required value={username} onChange={e => setUsername(e.target.value)}
+                style={{ width: '100%', padding: '12px 16px', background: '#ffffff0a', border: '1px solid #ffffff22', borderRadius: 12, color: '#fff', outline: 'none' }} />
+            </div>
+          )}
+
           <div>
-            <label style={{ display: 'block', fontSize: 11, color: '#fff6', fontWeight: 700, marginBottom: 6 }}>EMAIL</label>
-            <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
+            <label style={{ display: 'block', fontSize: 11, color: '#fff6', fontWeight: 700, marginBottom: 6 }}>EMAIL {isSignUp && <span style={{color: '#fff3'}}>(OPTIONAL)</span>}</label>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder={isSignUp ? "For account recovery" : ""}
               style={{ width: '100%', padding: '12px 16px', background: '#ffffff0a', border: '1px solid #ffffff22', borderRadius: 12, color: '#fff', outline: 'none' }} />
           </div>
           <div>

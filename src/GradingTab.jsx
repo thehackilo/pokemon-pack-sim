@@ -6,7 +6,7 @@ import SlabHeader from "./SlabHeader.jsx";
 export default function GradingTab({ collection, wallet, onSubmitGrading, onCardClick }) {
   const [hoveredCard, setHoveredCard] = useState(null);
   const [tick, setTick] = useState(0); // force re-render for timers
-  const [sortOrder, setSortOrder] = useState("newest");
+  const [sortOrder, setSortOrder] = useState("price-desc");
   const [visibleGraded, setVisibleGraded] = useState(20);
   const [visibleUngraded, setVisibleUngraded] = useState(20);
 
