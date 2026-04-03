@@ -232,7 +232,7 @@ async function fetchSetCards(setId) {
   let totalCount = Infinity;
   
   while (allCards.length < totalCount) {
-    const url = `https://api.pokemontcg.io/v2/cards?q=set.id:${setId}&pageSize=250&page=${page}`;
+    const url = `https://api.pokemontcg.io/v2/cards?q=set.id:${setId}&pageSize=250&page=${page}&select=id,number,name,supertype,subtypes,types,hp,rarity,flavorText,rules,images,tcgplayer`;
     const res = await fetch(url);
     const data = await res.json();
     totalCount = data.totalCount;
@@ -759,11 +759,14 @@ export default function App(){
         uid: c.uid, user_id: u.id, card_id: c.id, set_id: c.setId, set_name: c.setName,
         api_data: { 
           name: c.name, supertype: c.supertype, subtypes: c.subtypes, rarity: c.rarity, apiRarity: c.apiRarity,
-          imageSmall: c.imageSmall, imageLarge: c.imageLarge, rules: c.rules, flavorText: c.flavorText, hp: c.hp, types: c.types
+          imageSmall: c.imageSmall, imageLarge: c.imageLarge, rules: c.rules, flavorText: c.flavorText, hp: c.hp, types: c.types,
+          tcgPrices: c.tcgPrices
         },
         properties: c.properties, grading_start_time: c.gradingStartTime || null, psa_grade: c.psaGrade || null
       }));
-      supabase.from('cards').insert(records).then();
+      supabase.from('cards').insert(records).then(({error}) => {
+        if(error) alert("Database Sync Error: " + error.message);
+      });
     }
   };
 
