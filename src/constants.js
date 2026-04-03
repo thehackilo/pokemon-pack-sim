@@ -8,11 +8,11 @@ export const TC={Grass:"#78C850",Fire:"#F08030",Water:"#6890F0",Lightning:"#F8D0
   psychic:"#F85888",rock:"#B8A038",ghost:"#705898",ice:"#98D8D8",dragon:"#7038F8"};
 
 export const RC={
-  common:{l:"Common",s:"●",c:"#8B9DAF",g:"transparent",w:45},
-  uncommon:{l:"Uncommon",s:"◆",c:"#5DB35D",g:"#5DB35D44",w:30},
-  rare:{l:"Rare",s:"★",c:"#4A90D9",g:"#4A90D966",w:15},
-  ultra:{l:"Ultra Rare",s:"★★",c:"#C969D9",g:"#C969D988",w:7},
-  legendary:{l:"Legendary",s:"✦✦✦",c:"#FFD700",g:"#FFD700BB",w:3},
+  common:{l:"Common",s:"●",c:"#8B9DAF",g:"transparent",w:40},
+  uncommon:{l:"Uncommon",s:"◆",c:"#5DB35D",g:"#5DB35D44",w:25},
+  rare:{l:"Rare",s:"★",c:"#4A90D9",g:"#4A90D966",w:21.7},
+  ultra:{l:"Ultra Rare",s:"★★",c:"#C969D9",g:"#C969D988",w:10},
+  legendary:{l:"Legendary",s:"✦✦✦",c:"#FFD700",g:"#FFD700BB",w:3.3},
 };
 
 export function getMarketPrice(card) {
