@@ -56,7 +56,7 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
   };
 
   return (
-    <div style={{ width: "100%", maxWidth: 1100, animation: "slideUp .4s ease-out" }}>
+    <div style={{ width: "100%", maxWidth: 1100, margin: "0 auto", animation: "slideUp .4s ease-out" }}>
       {/* Header */}
       <div className="mobile-h1" style={{
         textAlign: "center", marginBottom: 32, padding: "32px 24px",

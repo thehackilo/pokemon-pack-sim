@@ -105,7 +105,7 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
   const visibleCards = filtered.slice(0, visibleCount);
 
   return (
-    <div style={{ width: "100%", maxWidth: 1100, animation: "slideUp .4s ease-out" }}>
+    <div style={{ width: "100%", maxWidth: 1100, margin: "0 auto", animation: "slideUp .4s ease-out" }}>
       {/* Portfolio Summary */}
       <div className="mobile-summary-box" style={{
         display: "flex", flexWrap: "wrap", gap: 24, justifyContent: "center", alignItems: "center",
