@@ -939,21 +939,31 @@ export default function App(){
         return; // handle bypass option
       }
       // Load user profile
-      const { data: pData } = await supabase.from('profiles').select('*').eq('id', loggedInUser.id).single();
-      if (pData) {
-        setWallet(Number(pData.wallet));
-        setStats(pData.stats);
-        setAutoSellThreshold(Number(pData.auto_sell_threshold));
-        setUsername(pData.username || "");
-      } else {
-        // Create initial profile if it doesn't exist yet
-        await supabase.from('profiles').insert({
-          id: loggedInUser.id,
-          wallet: 25.00,
-          stats: {packs:0,common:0,uncommon:0,rare:0,ultra:0,legendary:0},
-          auto_sell_threshold: 0
-        });
-        setWallet(25.00);
+      try {
+        const { data: pData, error: pError } = await supabase.from('profiles').select('*').eq('id', loggedInUser.id).single();
+        if (pError && pError.code !== 'PGRST116') throw pError; // PGRST116 is "no rows found"
+
+        if (pData) {
+          const wVal = parseFloat(pData.wallet);
+          setWallet(isNaN(wVal) ? 25.00 : wVal);
+          setStats(pData.stats || {packs:0,common:0,uncommon:0,rare:0,ultra:0,legendary:0});
+          setAutoSellThreshold(Number(pData.auto_sell_threshold) || 0);
+          setUsername(pData.username || "");
+        } else {
+          // Create initial profile if it doesn't exist yet
+          const initialStats = {packs:0,common:0,uncommon:0,rare:0,ultra:0,legendary:0};
+          await supabase.from('profiles').insert({
+            id: loggedInUser.id,
+            wallet: 25.00,
+            stats: initialStats,
+            auto_sell_threshold: 0
+          });
+          setWallet(25.00);
+          setStats(initialStats);
+        }
+      } catch (err) {
+        console.error("Profile Load Error:", err);
+        // Fallback to guest-like behavior if fetch fails critically
       }
       // Load collection
       const { data: cData } = await supabase.from('cards').select('*').eq('user_id', loggedInUser.id);
@@ -973,6 +983,14 @@ export default function App(){
     } else {
       setUser(null);
     }
+    setAuthLoading(false);
+  };
+
+  const refreshProfile = async () => {
+    const u = userRef.current;
+    if (!u || u.id === "guest") return;
+    setAuthLoading(true);
+    await handleUserSession(u);
     setAuthLoading(false);
   };
 
@@ -1409,7 +1427,14 @@ export default function App(){
 
       {detailCard && <CardDetailModal card={detailCard} onSell={handleSell} onClose={() => setDetailCard(null)} />}
       {showLeaderboard && <LeaderboardModal onClose={() => setShowLeaderboard(false)} />}
-      {showProfileModal && <ProfileModal currentName={username} onUpdate={setUsername} onClose={() => setShowProfileModal(false)} />}
+      {showProfileModal && (
+        <ProfileModal 
+          currentName={username} 
+          onUpdate={setUsername} 
+          onRefresh={refreshProfile}
+          onClose={() => setShowProfileModal(false)} 
+        />
+      )}
 
       <div style={{position:"fixed",bottom:10,left:"50%",transform:"translateX(-50%)",fontSize:9,color:"#fff15",letterSpacing:1}}>
         🔊 Sound on for full experience</div>

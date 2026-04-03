@@ -93,13 +93,34 @@ export default function ProfileModal({ currentName, onUpdate, onClose }) {
             style={{
               padding: '16px', borderRadius: 14, border: 'none', cursor: (loading || success) ? 'wait' : 'pointer',
               background: 'linear-gradient(135deg, #FFD700, #FFA000)', color: '#000',
-              fontSize: 15, fontWeight: 900, textTransform: 'uppercase', letterSpacing: 1, marginTop: 8,
+              fontSize: 15, fontWeight: 900, textTransform: "uppercase", letterSpacing: 1, marginTop: 8,
               opacity: (loading || success) ? 0.7 : 1
             }}
           >
             {loading ? 'SAVING...' : success ? 'DONE!' : 'SAVE CHANGES'}
           </button>
         </form>
+
+        <div style={{ marginTop: 24, padding: "20px 0", borderTop: "1px solid #ffffff0a" }}>
+          <div style={{ fontSize: 10, color: '#fff4', fontWeight: 800, textAlign: 'center', marginBottom: 12, letterSpacing: 1 }}>DATABASE SYNC</div>
+          <button 
+            onClick={async () => {
+              setLoading(true);
+              await onRefresh();
+              setLoading(false);
+              setSuccess(true);
+              setTimeout(() => setSuccess(false), 2000);
+            }} 
+            disabled={loading}
+            style={{
+              width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #ffffff15',
+              background: '#ffffff05', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+              transition: 'all .2s'
+            }}
+          >
+            🔄 SYNC CLOUD BALANCE
+          </button>
+        </div>
 
         <button onClick={onClose} style={{
           width: '100%', marginTop: 20, padding: 12, background: 'none', border: 'none',
