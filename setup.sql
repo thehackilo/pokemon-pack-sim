@@ -85,23 +85,39 @@ CREATE POLICY "Users can insert own profile"
   ON profiles FOR INSERT 
   WITH CHECK ( auth.uid() = id );
 
--- Policies for cards
-CREATE POLICY "Users can view own cards" 
-  ON cards FOR SELECT 
-  USING ( auth.uid() = user_id );
-
-CREATE POLICY "Enable read access for all for leaderboard calculation"
-  ON cards FOR SELECT
-  USING ( true );
-
-CREATE POLICY "Users can insert own cards" 
-  ON cards FOR INSERT 
-  WITH CHECK ( auth.uid() = user_id );
-
-CREATE POLICY "Users can update own cards" 
-  ON cards FOR UPDATE 
-  USING ( auth.uid() = user_id );
-
+-- Function to fetch a specific user's vault with pagination and value-based sorting
+CREATE OR REPLACE FUNCTION get_user_vault(target_user_id UUID, p_limit INT, p_offset INT)
+RETURNS SETOF cards AS $$
+BEGIN
+  RETURN QUERY
+  SELECT c.*
+  FROM cards c
+  WHERE c.user_id = target_user_id
+  ORDER BY (
+      (
+        COALESCE((c.api_data->'tcgPrices'->'holofoil'->>'market')::numeric, 0) +
+        COALESCE((c.api_data->'tcgPrices'->'reverseHolofoil'->>'market')::numeric, 0) +
+        COALESCE((c.api_data->'tcgPrices'->'normal'->>'market')::numeric, 0) +
+        COALESCE((c.api_data->'tcgPrices'->'unlimitedHolofoil'->>'market')::numeric, 0)
+      ) * 
+      CASE 
+        WHEN c.psa_grade = 10 THEN 8.0
+        WHEN c.psa_grade = 9 THEN 3.0
+        WHEN c.psa_grade = 8 THEN 1.6
+        WHEN c.psa_grade = 7 THEN 1.15
+        WHEN c.psa_grade = 6 THEN 0.9
+        WHEN c.psa_grade = 5 THEN 0.7
+        WHEN c.psa_grade = 4 THEN 0.5
+        WHEN c.psa_grade = 3 THEN 0.35
+        WHEN c.psa_grade = 2 THEN 0.25
+        WHEN c.psa_grade = 1 THEN 0.15
+        ELSE 1.0
+      END
+  ) DESC, c.created_at DESC
+  LIMIT p_limit
+  OFFSET p_offset;
+END;
+$$ LANGUAGE plpgsql;
 CREATE POLICY "Users can delete own cards" 
   ON cards FOR DELETE 
   USING ( auth.uid() = user_id );
