@@ -698,8 +698,7 @@ function PackWrapper({onOpen, setInfo}){
   const hRef=useRef(null);const pRef=useRef(0);const tRef=useRef(0);const dRef=useRef(false);
   const accent = setInfo.accentColor;
 
-  const go=(e)=>{
-    if(e) e.preventDefault();
+  const go=()=>{
     if(hold) return;
     try {
       sfx.init();
@@ -748,9 +747,10 @@ function PackWrapper({onOpen, setInfo}){
 
   return(
     <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:24}}>
-      <div onMouseDown={go} onMouseUp={no} onMouseLeave={no}
-        onTouchStart={go} onTouchEnd={no} onTouchCancel={no}
+      <div 
+        onPointerDown={go} onPointerUp={no} onPointerLeave={no} onPointerCancel={no}
         style={{width:230,height:330,borderRadius:14,position:"relative",cursor:"pointer",
+          touchAction:"none",userSelect:"none",WebkitUserSelect:"none",
           background:setInfo.packGradient,
           boxShadow:hold?`0 0 ${20+tp*.5}px ${accent}55,0 0 ${40+tp*1.2}px ${accent}22,0 8px 40px #0008`
             :"0 10px 40px #0006",
