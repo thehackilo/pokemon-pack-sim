@@ -683,6 +683,17 @@ export default function App(){
     return () => subscription.unsubscribe();
   }, []);
 
+  const handleSignOut = async () => {
+    if (user?.id === "guest") {
+      setUser(null);
+      setCollection([]);
+      setWallet(25.00);
+      setStats({packs:0,common:0,uncommon:0,rare:0,ultra:0,legendary:0});
+      return;
+    }
+    await supabase.auth.signOut();
+  };
+
   const handleUserSession = async (loggedInUser) => {
     if (loggedInUser) {
       setUser(loggedInUser);
@@ -792,7 +803,7 @@ export default function App(){
     
     // Generate cards and properties instantly
     const newCards = genPack(cardPool).map(c => ({
-      ...c, uid: `card-${++uidCounter}`, setId: selectedSet?.id, setName: selectedSet?.name,
+      ...c, uid: crypto.randomUUID(), setId: selectedSet?.id, setName: selectedSet?.name,
       properties: generateCardProperties(),
     }));
     
@@ -861,17 +872,23 @@ export default function App(){
 
   // PSA Grading handlers
   const handleSubmitGrading = (card) => {
-    if (wallet < GRADING_COST) { flashWallet("red"); return; }
-    sfx.collect(); // submission sound
-    const w = wallet - GRADING_COST;
-    setWallet(w);
-    syncWalletAndStats(w, stats);
-    flashWallet("red");
-    const st = Date.now();
-    setCollection(prev => prev.map(c =>
-      c.uid === card.uid ? { ...c, gradingStartTime: st } : c
-    ));
-    syncCardUpdate(card.uid, { grading_start_time: st });
+    setCollection(prev => {
+      const target = prev.find(c => c.uid === card.uid);
+      if (target?.gradingStartTime) return prev; // Already grading
+
+      setWallet(currentWallet => {
+        if (currentWallet < GRADING_COST) { flashWallet("red"); return currentWallet; }
+        sfx.collect(); // submission sound
+        const w = currentWallet - GRADING_COST;
+        syncWalletAndStats(w, stats);
+        flashWallet("red");
+        const st = Date.now();
+        syncCardUpdate(card.uid, { grading_start_time: st });
+        return w;
+      });
+
+      return prev.map(c => c.uid === card.uid ? { ...c, gradingStartTime: Date.now() } : c);
+    });
   };
 
   // Check for completed grading every second
@@ -984,14 +1001,25 @@ export default function App(){
           ))}
         </div>
 
-        {/* Wallet */}
-        <div style={{display:"flex", flexDirection:"column", alignItems:"flex-end" }}>
+        {/* Wallet & Account */}
+        <div style={{display:"flex", flexDirection:"column", alignItems:"flex-end", gap: 6}}>
           <div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 20px",borderRadius:24,
             background:walletFlash==="green"?"#22c55e22":walletFlash==="red"?"#ef444422":"linear-gradient(135deg,#ffffff11,#ffffff05)",
             border:`1px solid ${walletFlash==="green"?"#22c55e55":walletFlash==="red"?"#ef444455":"#ffffff22"}`,
             transition:"all .2s",transform:walletFlash?"scale(1.05)":"scale(1)"}}>
             <span style={{fontSize:18}}>💰</span>
             <span style={{fontSize:20,fontWeight:800,color:"#FFD700",fontFamily:"'Courier New',monospace"}}>${wallet.toFixed(2)}</span>
+          </div>
+
+          <div style={{display:"flex", alignItems:"center", gap: 8}}>
+            {user && (
+              <div style={{fontSize: 10, color: "#fff6", display: "flex", alignItems: "center", gap: 6}}>
+                <span style={{background: "#ffffff11", padding: "4px 8px", borderRadius: 12}}>
+                  👤 {user.id === "guest" ? "Guest Vault" : user.email}
+                </span>
+                <button onClick={handleSignOut} style={{background: "none", border: "none", color: "#fca5a5", fontSize: 10, cursor: "pointer", textDecoration: "underline"}}>Log Out</button>
+              </div>
+            )}
           </div>
         </div>
       </div>
