@@ -349,6 +349,7 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
 
             return (
               <div key={card.uid}
+                className="mobile-card-size"
                 onMouseEnter={() => setHoveredCard(card.uid)}
                 onMouseLeave={() => setHoveredCard(null)}
                 style={{
@@ -413,7 +414,7 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
                 </div>
 
                 {/* Info section */}
-                <div style={{ 
+                <div className="info-section" style={{ 
                   padding: "8px 10px 6px",
                   background: isGraded ? `linear-gradient(135deg,${psaColor}08,${psaColor}04)` : "transparent",
                   borderTop: isGraded ? `1px solid ${psaColor}22` : "none"

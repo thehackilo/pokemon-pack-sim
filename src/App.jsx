@@ -381,7 +381,7 @@ const PokemonCard = memo(function PokemonCard({pokemon,revealed,index,onClick,is
 
   return(
     <div ref={ref} onClick={onClick} onMouseMove={onMove} onMouseLeave={()=>setHover({x:0,y:0})}
-      className={revealAnim}
+      className={`mobile-card-size ${revealAnim}`}
       style={{width:170,height:238,perspective:900,cursor:"pointer",
         animation:revealed?`cardIn .5s ${index*.04}s cubic-bezier(.34,1.56,.64,1) both`
           :`cardFloat 2.5s ease-in-out infinite`,
@@ -420,7 +420,7 @@ const PokemonCard = memo(function PokemonCard({pokemon,revealed,index,onClick,is
               transition:"filter .5s ease-out"}}/>
           
           {/* Rarity badge overlay */}
-          <div style={{position:"absolute",bottom:6,right:6,zIndex:5,
+          <div className="rarity-badge" style={{position:"absolute",bottom:6,right:6,zIndex:5,
             background:"#000a",backdropFilter:"blur(4px)",borderRadius:6,padding:"2px 6px",
             display:"flex",alignItems:"center",gap:4}}>
             <span style={{fontSize:8,color:rc.c,fontWeight:800}}>{rc.s}</span>
@@ -437,14 +437,14 @@ const PokemonCard = memo(function PokemonCard({pokemon,revealed,index,onClick,is
           border:"2px solid #1a2040",display:"flex",alignItems:"center",justifyContent:"center"}}>
           <div style={{position:"absolute",inset:0,opacity:.12,
             background:"repeating-conic-gradient(#243060 0deg 15deg,transparent 15deg 30deg)"}}/>
-          <div style={{width:54,height:54,borderRadius:"50%",position:"relative",
+          <div className="pokeball-logo" style={{width:54,height:54,borderRadius:"50%",position:"relative",
             background:"radial-gradient(circle at 38% 32%,#fff,#e0e0e0 42%,#dc2626 43%,#ef4444 65%,#b91c1c)",
             border:"4px solid #151a2e",boxShadow:"0 0 16px #0006"}}>
             <div style={{position:"absolute",top:"50%",left:-4,right:-4,height:4,background:"#151a2e",transform:"translateY(-50%)"}}/>
             <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",
               width:13,height:13,borderRadius:"50%",background:"#fff",border:"3px solid #151a2e"}}/>
           </div>
-          <div style={{position:"absolute",bottom:14,fontSize:8,color:"#fff2",letterSpacing:2.5,textTransform:"uppercase"}}>tap to flip</div>
+          <div className="tap-to-flip" style={{position:"absolute",bottom:14,fontSize:8,color:"#fff2",letterSpacing:2.5,textTransform:"uppercase"}}>tap to flip</div>
         </div>
       </div>
     </div>
@@ -615,6 +615,8 @@ function SetSelector({onSelect, currentSetId}) {
                   </div>
                 </div>
               </div>
+              {/* Info section */}
+              <div className="info-section" style={{ padding: "8px 10px 6px" }} />
             </div>
           );
         })}
@@ -967,7 +969,7 @@ export default function App(){
         @media(max-width: 768px) {
           .mobile-stack { flex-direction: column !important; align-items: stretch !important; gap: 16px; padding: 12px !important; box-sizing: border-box !important; max-width: 100vw !important; overflow-x: hidden !important; }
           .mobile-stack > div { align-items: stretch !important; text-align: left; }
-          .mobile-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important; gap: 10px !important; }
+          .mobile-grid { grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)) !important; gap: 8px !important; padding: 4px !important; }
           .mobile-tabs { width: 100%; justify-content: center; flex-wrap: wrap; gap: 4px !important; }
           .mobile-tabs button { flex: 1 1 30%; padding: 8px 6px !important; font-size: 12px !important; }
           .mobile-header-txt { font-size: 18px !important; }
@@ -984,6 +986,13 @@ export default function App(){
           .mobile-summary-box > div { min-width: 45% !important; }
           .mobile-summary-box > div:nth-child(even) { display: none !important; }
           .mobile-filter-stack { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; margin-bottom: 24px !important; width: 100% !important; box-sizing: border-box !important; }
+          .mobile-card-size { width: 85px !important; height: 119px !important; }
+          .mobile-card-size .particles { display: none !important; }
+          .mobile-card-size .rarity-badge { font-size: 6px !important; padding: 1px 4px !important; bottom: 3px !important; right: 3px !important; }
+          .mobile-card-size .tap-to-flip { font-size: 6px !important; bottom: 8px !important; }
+          .mobile-card-size .pokeball-logo { width: 30px !important; height: 30px !important; }
+          .mobile-card-size .info-section { display: none !important; }
+          .mobile-card-size .slab-footer { display: none !important; }
         }
       `}</style>
 
@@ -1081,6 +1090,29 @@ export default function App(){
 
       {activeTab === "open" && phase === "revealing" && (
         <div style={{animation:"slideUp .3s ease-out",display:"flex",flexDirection:"column",alignItems:"center",width:"100%",maxWidth:1060}}>
+          {/* Controls ABOVE cards */}
+          <div style={{display:"flex",gap:12,flexWrap:"wrap",justifyContent:"center",alignItems:"center",marginBottom:16,padding:"0 20px"}}>
+            {!allDone&&<>
+              <div style={{fontSize:12,color:"#fff4"}}>Tap to flip · {revealed.length}/{cards.length}</div>
+              <button onClick={revealAll} onMouseEnter={()=>sfx.hover()}
+                style={{padding:"10px 24px",borderRadius:20,border:"1px solid #FFD70088",background:"#FFD70015",
+                  color:"#FFD700",fontSize:13,fontWeight:900,cursor:"pointer",boxShadow:"0 4px 15px #FFD70022"}}>
+                ✨ REVEAL ALL
+              </button>
+            </>}
+            {allDone&&<div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:12,animation:"slideUp .3s ease-out"}}>
+                {best&&<div style={{fontSize:15,color:RC[best.rarity].c,fontWeight:800,textAlign:"center",
+                  textShadow:`0 0 24px ${RC[best.rarity].g}`,
+                  animation:["ultra","legendary"].includes(best.rarity)?"sPulse 2s infinite":"none"}}>
+                  Best pull: {best.name}!</div>}
+                <button onClick={()=>{setRevealed([]);setPhase("pack");}} onMouseEnter={()=>sfx.hover()}
+                  style={{padding:"12px 32px",borderRadius:24,border:"none",background:"linear-gradient(135deg,#FFD700,#FFA000)",
+                    color:"#000",fontSize:14,fontWeight:900,cursor:"pointer",boxShadow:"0 6px 20px #FFD70044"}}>
+                  OPEN ANOTHER PACK
+                </button>
+            </div>}
+          </div>
+
           <div style={{display:"flex",flexWrap:"wrap",gap:11,justifyContent:"center",padding:6,marginBottom:14}}>
             {cards.map((p,i)=><PokemonCard key={`${p.id}-${i}`} pokemon={p} revealed={revealed.includes(i)}
               index={i} isLast={i===cards.length-1}

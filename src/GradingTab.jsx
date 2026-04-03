@@ -115,7 +115,7 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
               const progress = getProgress(card);
               const rc = RC[card.rarity];
               return (
-                <div key={card.uid} style={{
+                <div key={card.uid} className="mobile-card-size" style={{
                   borderRadius: 12, overflow: "hidden", position: "relative",
                   background: "linear-gradient(160deg,#10131f,#1a1d2e)",
                   border: `1.5px solid #fbbf2433`,
@@ -148,7 +148,7 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
                       transition: "width 1s linear",
                     }} />
                   </div>
-                  <div style={{ padding: "6px 10px" }}>
+                  <div className="info-section" style={{ padding: "6px 10px" }}>
                     <div style={{ fontSize: 10, fontWeight: 700, color: "#fff",
                       whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       {card.name}
@@ -184,6 +184,7 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
 
               return (
                 <div key={card.uid}
+                  className="mobile-card-size"
                   onClick={() => onCardClick && onCardClick(card)}
                   onMouseEnter={() => setHoveredCard(card.uid)}
                   onMouseLeave={() => setHoveredCard(null)}
@@ -218,7 +219,7 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
                   </div>
 
                   {/* Slab Footer */}
-                  <div style={{
+                  <div className="slab-footer" style={{
                     background: `linear-gradient(135deg,${gradeColor}08,${gradeColor}04)`,
                     borderTop: `1px solid ${gradeColor}22`,
                     padding: "8px 10px",
@@ -294,6 +295,7 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
 
               return (
                 <div key={card.uid}
+                  className="mobile-card-size"
                   onMouseEnter={() => setHoveredCard(card.uid)}
                   onMouseLeave={() => setHoveredCard(null)}
                   style={{
@@ -320,7 +322,7 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
                       }}>{grade}</div>
                     )}
                   </div>
-                  <div style={{ padding: "12px" }}>
+                  <div className="info-section" style={{ padding: "12px" }}>
                     <div style={{
                       fontSize: 14, fontWeight: 800, color: "#fff",
                       whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: 6,
