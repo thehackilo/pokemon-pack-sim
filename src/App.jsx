@@ -1171,13 +1171,13 @@ export default function App(){
           .mobile-summary-box > div { min-width: 45% !important; }
           .mobile-summary-box > div:nth-child(even) { display: none !important; }
           .mobile-filter-stack { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; margin-bottom: 24px !important; width: 100% !important; box-sizing: border-box !important; }
-          .mobile-card-size { width: 100px !important; height: 140px !important; }
+          .mobile-card-size { width: 100% !important; height: auto !important; min-height: 180px !important; }
           .mobile-card-size .particles { display: none !important; }
           .mobile-card-size .rarity-badge { font-size: 6px !important; padding: 1px 4px !important; bottom: 3px !important; right: 3px !important; }
           .mobile-card-size .tap-to-flip { font-size: 6px !important; bottom: 8px !important; }
           .mobile-card-size .pokeball-logo { width: 30px !important; height: 30px !important; }
-          .mobile-card-size .info-section { display: none !important; }
-          .mobile-card-size .slab-footer { display: none !important; }
+          .mobile-card-size .info-section { display: block !important; padding: 8px !important; }
+          .mobile-card-size .slab-footer { display: block !important; padding: 6px !important; }
         }
       `}</style>
 
