@@ -969,7 +969,7 @@ export default function App(){
         @media(max-width: 768px) {
           .mobile-stack { flex-direction: column !important; align-items: stretch !important; gap: 16px; padding: 12px !important; box-sizing: border-box !important; max-width: 100vw !important; overflow-x: hidden !important; }
           .mobile-stack > div { align-items: stretch !important; text-align: left; }
-          .mobile-grid { grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)) !important; gap: 8px !important; padding: 4px !important; }
+          .mobile-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important; gap: 8px !important; padding: 4px !important; }
           .mobile-tabs { width: 100%; justify-content: center; flex-wrap: wrap; gap: 4px !important; }
           .mobile-tabs button { flex: 1 1 30%; padding: 8px 6px !important; font-size: 12px !important; }
           .mobile-header-txt { font-size: 18px !important; }
@@ -986,7 +986,7 @@ export default function App(){
           .mobile-summary-box > div { min-width: 45% !important; }
           .mobile-summary-box > div:nth-child(even) { display: none !important; }
           .mobile-filter-stack { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; margin-bottom: 24px !important; width: 100% !important; box-sizing: border-box !important; }
-          .mobile-card-size { width: 85px !important; height: 119px !important; }
+          .mobile-card-size { width: 100px !important; height: 140px !important; }
           .mobile-card-size .particles { display: none !important; }
           .mobile-card-size .rarity-badge { font-size: 6px !important; padding: 1px 4px !important; bottom: 3px !important; right: 3px !important; }
           .mobile-card-size .tap-to-flip { font-size: 6px !important; bottom: 8px !important; }
