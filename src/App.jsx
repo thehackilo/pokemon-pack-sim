@@ -696,6 +696,15 @@ export default function App(){
         setWallet(Number(pData.wallet));
         setStats(pData.stats);
         setAutoSellThreshold(Number(pData.auto_sell_threshold));
+      } else {
+        // Create initial profile if it doesn't exist yet
+        await supabase.from('profiles').insert({
+          id: loggedInUser.id,
+          wallet: 25.00,
+          stats: {packs:0,common:0,uncommon:0,rare:0,ultra:0,legendary:0},
+          auto_sell_threshold: 0
+        });
+        setWallet(25.00);
       }
       // Load collection
       const { data: cData } = await supabase.from('cards').select('*').eq('user_id', loggedInUser.id);

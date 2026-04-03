@@ -28,15 +28,11 @@ export default function AuthOverlay({ onLogin }) {
     if (isSignUp) {
       const { data, error: err } = await supabase.auth.signUp({ email, password });
       authError = err;
-      if (!err && data.user) {
-        // Create initial profile row
-        const { error: profileErr } = await supabase.from('profiles').insert({
-          id: data.user.id,
-          wallet: 25.00,
-          stats: {packs:0,common:0,uncommon:0,rare:0,ultra:0,legendary:0},
-          auto_sell_threshold: 0
-        });
-        if (profileErr) console.error("Failed to make profile:", profileErr);
+      if (!err && !data.session) {
+        // Supabase requires email verification by default
+        setError("Account created! Please check your email inbox to verify your account.");
+        setLoading(false);
+        return; // Stop here so it doesn't unmount or hang
       }
     } else {
       const { error: err } = await supabase.auth.signInWithPassword({ email, password });
