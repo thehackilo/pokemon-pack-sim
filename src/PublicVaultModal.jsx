@@ -9,6 +9,11 @@ export default function PublicVaultModal({ userId, username, totalValue, onClose
 
   useEffect(() => {
     async function fetchVault() {
+      if (!userId) {
+        setError("Missing trainer ID.");
+        setLoading(false);
+        return;
+      }
       try {
         const { data, error: err } = await supabase
           .from('cards')
@@ -19,8 +24,8 @@ export default function PublicVaultModal({ userId, username, totalValue, onClose
         if (err) throw err;
         setCards(data || []);
       } catch (err) {
-        console.error("Vault error:", err);
-        setError("Failed to load trainer's vault.");
+        console.error("Vault fetch error details:", err);
+        setError(err.message || "Failed to load trainer's vault.");
       } finally {
         setLoading(false);
       }
