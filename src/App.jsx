@@ -466,7 +466,7 @@ function genPack(allCards){
   
   for(let i=0;i<4;i++)cards.push(add(pool.common));
   for(let i=0;i<3;i++)cards.push(add(pool.uncommon));
-  cards.push(add([...pool.rare,...pool.ultra,...pool.legendary]));
+  cards.push(add(pool.rare));
   for(let i=0;i<2;i++)cards.push(add(pool[pickR()]));
   
   const sorted=[...cards].sort((a,b)=>{const o={common:0,uncommon:1,rare:2,ultra:3,legendary:4};return o[a.rarity]-o[b.rarity];});
