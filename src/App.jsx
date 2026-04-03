@@ -393,11 +393,10 @@ const SETS = [
 function mapRarity(apiRarity) {
   if (!apiRarity) return "common";
   const r = apiRarity.toLowerCase();
-  if (r.includes("hyper") || r.includes("special illustration") || r.includes("secret")) return "legendary";
-  if (r.includes("illustration rare") || r.includes("ultra") || r.includes("ace spec")) return "ultra";
-  if (r.includes("double") || r.includes("rare holo")) return "rare";
+  if (r.includes("hyper") || r.includes("special illustration") || r.includes("secret") || r.includes("promo")) return "legendary";
+  if (r.includes("illustration rare") || r.includes("ultra") || r.includes("ace spec") || r.includes("double")) return "ultra";
+  if (r.includes("rare holo") || r.includes("rare")) return "rare";
   if (r.includes("uncommon")) return "uncommon";
-  if (r.includes("rare")) return "rare";
   return "common";
 }
 
