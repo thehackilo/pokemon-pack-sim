@@ -985,27 +985,26 @@ export default function App(){
     }
   };
 
-  const openPack=()=>{
+  const openPack=() => {
     const cost = selectedSet?.packPrice || 0;
     if (wallet < cost) { flashWallet("red"); doShake(); return; }
-    
-    let w = wallet;
-    if (cost > 0) { w -= cost; setWallet(w); flashWallet("red"); }
     
     // Generate cards and properties instantly
     const newCards = genPack(cardPool).map(c => ({
       ...c, uid: crypto.randomUUID(), setId: selectedSet?.id, setName: selectedSet?.name,
       properties: generateCardProperties(),
     }));
-    
+
     // Increment stats
     const ns={...stats,packs:stats.packs+1};
     newCards.forEach(c=>{ns[c.rarity]=(ns[c.rarity]||0)+1;});
     setStats(ns);
 
-    // Auto-sell logic OR keep immediately
+    // Calculate net wallet change (Auto-Sell Earnings - Pack Cost)
+    let netChange = -cost;
+    const toKeep = [];
+    
     if (autoSellThreshold > 0) {
-      const toKeep = [];
       let autoSellEarnings = 0;
       newCards.forEach(c => {
         const price = getMarketPrice(c);
@@ -1015,19 +1014,23 @@ export default function App(){
           toKeep.push(c);
         }
       });
-      if (autoSellEarnings > 0) {
-        w += autoSellEarnings;
-        setWallet(w);
-        flashWallet("green");
-      }
+      netChange += autoSellEarnings;
       setCollection(prev => [...prev, ...toKeep]);
       syncCardsInsert(toKeep);
     } else {
       setCollection(prev => [...prev, ...newCards]);
       syncCardsInsert(newCards);
     }
-    
-    syncWalletAndStats(w, ns);
+
+    // Atomic wallet update
+    setWallet(curr => {
+      const updated = curr + netChange;
+      syncWalletAndStats(updated, ns); // Sync with the precise calculated value
+      return updated;
+    });
+
+    if (netChange > -cost) flashWallet("green");
+    else if (cost > 0) flashWallet("red");
 
     setPackCards(newCards);
     setRevealed([]);setCur(0);setPhase("revealing");
@@ -1041,11 +1044,13 @@ export default function App(){
   const handleSell = (card, price) => {
     sfx.sell();
     setCollection(prev => { const idx = prev.findIndex(c => c.uid === card.uid); if(idx===-1) return prev; return [...prev.slice(0,idx),...prev.slice(idx+1)]; });
-    const w = wallet + price;
-    setWallet(w);
-    syncWalletAndStats(w, stats);
+    setWallet(curr => {
+      const updated = curr + price;
+      syncWalletAndStats(updated, stats);
+      flashWallet("green");
+      return updated;
+    });
     syncCardDelete([card.uid]);
-    flashWallet("green");
   };
 
   const handleBulkSell = (cards) => {
@@ -1054,11 +1059,13 @@ export default function App(){
     const totalEarned = cards.reduce((s, c) => s + getMarketPrice(c), 0);
     const uidsToRemove = new Set(cards.map(c => c.uid));
     setCollection(prev => prev.filter(c => !uidsToRemove.has(c.uid)));
-    const w = wallet + totalEarned;
-    setWallet(w);
-    syncWalletAndStats(w, stats);
+    setWallet(curr => {
+      const updated = curr + totalEarned;
+      syncWalletAndStats(updated, stats);
+      flashWallet("green");
+      return updated;
+    });
     syncCardDelete(Array.from(uidsToRemove));
-    flashWallet("green");
   };
 
   // PSA Grading handlers
