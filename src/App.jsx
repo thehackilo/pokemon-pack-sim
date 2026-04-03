@@ -403,7 +403,7 @@ const SETS = [
     gradientTo: "#3d320d",
     packGradient: "linear-gradient(140deg,#b8a038,#d4af37,#ffd700)",
     description: "The set that started it all! Relive the 1999 phenomenon.",
-    packPrice: 1000,
+    packPrice: 500,
   },
   {
     id: "base1_1st",
@@ -418,7 +418,7 @@ const SETS = [
     gradientTo: "#3d3d0d",
     packGradient: "linear-gradient(145deg,#222,#444,#000)", // Dark premium 1st ed look
     description: "Ultra-rare 1st Edition print run. The holy grail of collecting.",
-    packPrice: 15000,
+    packPrice: 1000,
     is1stEdition: true,
   },
 ];
