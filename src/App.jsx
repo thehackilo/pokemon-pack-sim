@@ -1089,8 +1089,9 @@ export default function App(){
 
 
   const handleSell = (card, price) => {
+    sfx.init();
     sfx.sell();
-    setCollection(prev => { const idx = prev.findIndex(c => c.uid === card.uid); if(idx===-1) return prev; return [...prev.slice(0,idx),...prev.slice(idx+1)]; });
+    setCollection(prev => prev.filter(c => c.uid !== card.uid));
     setWallet(curr => {
       const updated = curr + price;
       syncWalletAndStats(updated, stats);
@@ -1100,11 +1101,12 @@ export default function App(){
     syncCardDelete([card.uid]);
   };
 
-  const handleBulkSell = (cards) => {
-    if (!cards.length) return;
+  const handleBulkSell = (cardsArray) => {
+    if (cardsArray.length === 0) return;
+    sfx.init();
     sfx.bulkSell();
-    const totalEarned = cards.reduce((s, c) => s + getMarketPrice(c), 0);
-    const uidsToRemove = new Set(cards.map(c => c.uid));
+    const totalEarned = cardsArray.reduce((s, c) => s + getMarketPrice(c), 0);
+    const uidsToRemove = new Set(cardsArray.map(c => c.uid));
     setCollection(prev => prev.filter(c => !uidsToRemove.has(c.uid)));
     setWallet(curr => {
       const updated = curr + totalEarned;
@@ -1227,21 +1229,14 @@ export default function App(){
           .mobile-filter-stack { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; margin-bottom: 24px !important; width: 100% !important; box-sizing: border-box !important; }
           .mobile-card-size { width: 100px !important; height: 140px !important; }
           .mobile-card-size .particles { display: none !important; }
-          .mobile-card-size .rarity-badge { font-size: 6px !important; padding: 1px 4px !important; bottom: 3px !important; right: 3px !important; }
-          .mobile-card-size .tap-to-flip { font-size: 6px !important; bottom: 8px !important; }
-          .mobile-card-size .pokeball-logo { width: 30px !important; height: 30px !important; }
           .mobile-card-size .info-section { display: none !important; }
           .mobile-card-size .slab-footer { display: none !important; }
 
           /* Restore info section ONLY in Collection & Grading where buttons are needed */
           .collection-tab .mobile-card-size .info-section,
-          .grading-card .info-section { display: block !important; padding: 6px !important; }
+          .grading-card .info-section { display: block !important; padding: 4px !important; }
           .grading-card .slab-footer { display: block !important; }
-
-          /* Special override for Grading Tab to show the button */
-          .grading-card { width: 100% !important; height: auto !important; min-height: 200px !important; }
-          .grading-card .info-section { display: block !important; padding: 10px !important; }
-          .grading-card .slab-footer { display: block !important; }
+          .grading-card { width: 100% !important; min-height: 200px !important; }
         }
       `}</style>
 

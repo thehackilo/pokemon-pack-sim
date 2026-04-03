@@ -332,10 +332,11 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
           </div>
         </div>
       ) : (
-        <div className="mobile-grid" style={{
-          display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(155px, 1fr))",
-          gap: 12, padding: "0 4px"
-        }}>
+        <div className="mobile-grid"
+            style={{
+              display: "grid", gridTemplateColumns: "repeat(auto-fill, 170px)",
+              gap: 20, padding: "20px 0", justifyContent: "center",
+            }}>
           {visibleCards.map((card) => {
             const basePrice = getMarketPrice(card);
             const price = getCardValue(card);

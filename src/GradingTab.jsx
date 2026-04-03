@@ -170,8 +170,8 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
             ✓ Graded Cards ({gradedCards.length})
           </div>
           <div className="mobile-grid" style={{
-            display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(175px, 1fr))",
-            gap: 14,
+            display: "grid", gridTemplateColumns: "repeat(auto-fill, 170px)",
+            gap: 20, justifyContent: "center",
           }}>
             {visibleGradedCards.map(card => {
               const grade = card.psaGrade;
