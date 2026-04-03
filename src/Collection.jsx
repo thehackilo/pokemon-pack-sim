@@ -353,9 +353,9 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
                 onMouseEnter={() => setHoveredCard(card.uid)}
                 onMouseLeave={() => setHoveredCard(null)}
                 style={{
-                  borderRadius: isGraded ? 4 : 12, overflow: "hidden", position: "relative",
-                  background: isGraded ? "linear-gradient(160deg,#0c0e18,#141828)" : "linear-gradient(160deg,#10131f,#161b2a)",
-                  border: isGraded ? `2px solid ${psaColor}${isHovered ? "aa" : "55"}` : `1.5px solid ${rc.c}${isHovered ? "66" : "22"}`,
+                  borderRadius: 12, overflow: "hidden", position: "relative",
+                  background: isGraded ? "linear-gradient(160deg,#0f111a,#1a1f33)" : "linear-gradient(160deg,#10131f,#161b2a)",
+                  border: isGraded ? `1.5px solid ${psaColor}${isHovered ? "aa" : "44"}` : `1.5px solid ${rc.c}${isHovered ? "66" : "22"}`,
                   transition: "all .3s cubic-bezier(.4,0,.2,1)",
                   transform: isSelling ? "scale(0.8) rotateZ(5deg)" : isHovered ? "translateY(-4px) scale(1.02)" : "none",
                   opacity: isSelling ? 0 : 1,
@@ -364,17 +364,10 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
                     : (isGraded ? `0 2px 12px ${psaColor}11` : "0 2px 10px #0003"),
                 }}>
                 
-                {/* PSA Slab Header */}
-                {isGraded && (
-                  <SlabHeader card={card} style={{ borderTopLeftRadius: 3, borderTopRightRadius: 3 }} />
-                )}
-
                 {/* Clickable card image */}
                 <div onClick={() => onCardClick && onCardClick(card)}
                   style={{ 
                     width: "100%", aspectRatio: "2.5/3.5", overflow: "hidden", position: "relative", cursor: "pointer",
-                    borderLeft: isGraded ? `3px solid ${psaColor}22` : "none",
-                    borderRight: isGraded ? `3px solid ${psaColor}22` : "none",
                     background: isGraded ? "#0a0c14" : "transparent"
                   }}>
                   <img src={card.imageSmall} alt={card.name}
@@ -391,13 +384,28 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
                       background: `radial-gradient(ellipse at 50% 30%, ${psaColor}12, transparent 70%)`
                     }} />
                   )}
+                  {/* PSA Badge (Graded) */}
+                  {isGraded && (
+                    <div style={{
+                      position: "absolute", top: 8, right: 8, padding: "3px 8px",
+                      borderRadius: 8, background: "#e3322f", backdropFilter: "blur(4px)",
+                      fontSize: 11, fontWeight: 900, fontFamily: "monospace",
+                      color: "#fff", border: "1px solid #ffffff44",
+                      boxShadow: "0 4px 12px rgba(227, 50, 47, 0.4)",
+                      display: "flex", alignItems: "center", gap: 5, zIndex: 5
+                    }}>
+                      <span style={{ fontSize: 9, opacity: 0.8, letterSpacing: 0.5 }}>PSA</span>
+                      {card.psaGrade}
+                    </div>
+                  )}
                   {/* Grade badge (Raw) */}
                   {!isGraded && grade && (
                     <div style={{
-                      position: "absolute", top: 6, right: 6, padding: "2px 6px",
-                      borderRadius: 6, background: "#000a", backdropFilter: "blur(4px)",
-                      fontSize: 10, fontWeight: 800, fontFamily: "'Courier New',monospace",
+                      position: "absolute", top: 8, right: 8, padding: "3px 8px",
+                      borderRadius: 8, background: "#000a", backdropFilter: "blur(6px)",
+                      fontSize: 11, fontWeight: 900, fontFamily: "monospace",
                       color: grade >= 9.5 ? "#FFD700" : grade >= 8.5 ? "#4ade80" : grade >= 7 ? "#60a5fa" : grade >= 5 ? "#fb923c" : "#ef4444",
+                      border: "1px solid #ffffff15", zIndex: 5
                     }}>{grade}</div>
                   )}
                   {/* Tap hint on hover */}
