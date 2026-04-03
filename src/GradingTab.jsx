@@ -115,7 +115,7 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
               const progress = getProgress(card);
               const rc = RC[card.rarity];
               return (
-                <div key={card.uid} className="mobile-card-size" style={{
+                <div key={card.uid} className="mobile-card-size grading-card" style={{
                   borderRadius: 12, overflow: "hidden", position: "relative",
                   background: "linear-gradient(160deg,#10131f,#1a1d2e)",
                   border: `1.5px solid #fbbf2433`,
@@ -184,7 +184,7 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
 
               return (
                 <div key={card.uid}
-                  className="mobile-card-size"
+                  className="mobile-card-size grading-card"
                   onClick={() => onCardClick && onCardClick(card)}
                   onMouseEnter={() => setHoveredCard(card.uid)}
                   onMouseLeave={() => setHoveredCard(null)}
@@ -295,7 +295,7 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
 
               return (
                 <div key={card.uid}
-                  className="mobile-card-size"
+                  className="mobile-card-size grading-card"
                   onMouseEnter={() => setHoveredCard(card.uid)}
                   onMouseLeave={() => setHoveredCard(null)}
                   style={{
