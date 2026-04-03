@@ -385,6 +385,37 @@ const SETS = [
     description: "Eevee and its Evolutions take center stage!",
     packPrice: 15,
   },
+  {
+    id: "base1",
+    name: "Base Set (Unlimited)",
+    series: "Base",
+    logoUrl: "https://images.pokemontcg.io/base1/logo.png",
+    symbolUrl: "https://images.pokemontcg.io/base1/symbol.png",
+    total: 102,
+    releaseDate: "1999/01/09",
+    accentColor: "#F8D030",
+    gradientFrom: "#1a1505",
+    gradientTo: "#3d320d",
+    packGradient: "linear-gradient(140deg,#b8a038,#d4af37,#ffd700)",
+    description: "The set that started it all! Relive the 1999 phenomenon.",
+    packPrice: 1000,
+  },
+  {
+    id: "base1_1st",
+    name: "Base Set (1st Edition)",
+    series: "Base",
+    logoUrl: "https://images.pokemontcg.io/base1/logo.png",
+    symbolUrl: "https://images.pokemontcg.io/base1/symbol.png",
+    total: 102,
+    releaseDate: "1999/01/09",
+    accentColor: "#fbbf24",
+    gradientFrom: "#1a1a05",
+    gradientTo: "#3d3d0d",
+    packGradient: "linear-gradient(145deg,#222,#444,#000)", // Dark premium 1st ed look
+    description: "Ultra-rare 1st Edition print run. The holy grail of collecting.",
+    packPrice: 15000,
+    is1stEdition: true,
+  },
 ];
 
 /* TC and RC are imported from constants.js */
@@ -406,6 +437,7 @@ function mapRarity(apiRarity) {
 const cardCache = {};
 
 async function fetchSetCards(setId) {
+  const apiId = setId === "base1_1st" ? "base1" : setId;
   if (cardCache[setId]) return cardCache[setId];
   
   const allCards = [];
@@ -413,7 +445,7 @@ async function fetchSetCards(setId) {
   let totalCount = Infinity;
   
   while (allCards.length < totalCount) {
-    const url = `https://api.pokemontcg.io/v2/cards?q=set.id:${setId}&pageSize=250&page=${page}&select=id,number,name,supertype,subtypes,types,hp,rarity,flavorText,rules,images,tcgplayer`;
+    const url = `https://api.pokemontcg.io/v2/cards?q=set.id:${apiId}&pageSize=250&page=${page}&select=id,number,name,supertype,subtypes,types,hp,rarity,flavorText,rules,images,tcgplayer`;
     const res = await fetch(url);
     const data = await res.json();
     totalCount = data.totalCount;
@@ -608,6 +640,19 @@ const PokemonCard = memo(function PokemonCard({pokemon,revealed,index,onClick,is
             <span style={{fontSize:7,color:rc.c,fontWeight:700,
               animation:isHolo?"sPulse 2s ease-in-out infinite":"none"}}>{rc.l}</span>
           </div>
+
+          {/* 1st Edition Stamp */}
+          {pokemon.variant === "1st Edition" && (
+            <div style={{
+              position: "absolute", bottom: 45, left: 12, zIndex: 6,
+              width: 24, height: 24, borderRadius: "50%",
+              background: "#000e", border: "1.5px solid #FFD700",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              boxShadow: "0 0 10px #FFD70066", transform: "rotate(-10deg)"
+            }}>
+              <div style={{fontSize: 8, fontWeight: 900, color: "#FFD700", letterSpacing: -0.5}}>1st</div>
+            </div>
+          )}
           
           <Particles active={showP} color={rc.c} rarity={pokemon.rarity}/>
         </div>
@@ -914,6 +959,7 @@ export default function App(){
           setId: row.set_id,
           setName: row.set_name,
           ...row.api_data,
+          variant: row.api_data?.variant || null,
           properties: row.properties,
           gradingStartTime: row.grading_start_time,
           psaGrade: row.psa_grade
@@ -948,7 +994,7 @@ export default function App(){
         api_data: { 
           name: c.name, supertype: c.supertype, subtypes: c.subtypes, rarity: c.rarity, apiRarity: c.apiRarity,
           imageSmall: c.imageSmall, imageLarge: c.imageLarge, rules: c.rules, flavorText: c.flavorText, hp: c.hp, types: c.types,
-          tcgPrices: c.tcgPrices
+          tcgPrices: c.tcgPrices, variant: c.variant || null
         },
         properties: c.properties, grading_start_time: c.gradingStartTime || null, psa_grade: c.psaGrade || null
       }));
@@ -993,6 +1039,7 @@ export default function App(){
     const newCards = genPack(cardPool).map(c => ({
       ...c, uid: crypto.randomUUID(), setId: selectedSet?.id, setName: selectedSet?.name,
       properties: generateCardProperties(),
+      variant: selectedSet?.is1stEdition ? "1st Edition" : null,
     }));
 
     // Increment stats

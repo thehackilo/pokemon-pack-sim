@@ -15,10 +15,19 @@ export const RC={
   legendary:{l:"Legendary",s:"✦✦✦",c:"#FFD700",g:"#FFD700BB",w:1.68},
 };
 
+/** Get the market price with custom multipliers for variants like 1st Edition */
 export function getMarketPrice(card) {
   if (!card.tcgPrices) return 0;
   const p = card.tcgPrices;
-  return p.holofoil?.market || p.reverseHolofoil?.market || p.normal?.market || p.unlimitedHolofoil?.market || p["1stEditionHolofoil"]?.market || 0;
+  let price = p.holofoil?.market || p.reverseHolofoil?.market || p.normal?.market || p.unlimitedHolofoil?.market || p["1stEditionHolofoil"]?.market || 0;
+  
+  // Custom 1st Edition Logic for Base Set Simulation
+  if (card.variant === "1st Edition") {
+    const multiplier = ["rare", "ultra", "legendary"].includes(card.rarity) ? 20 : 5;
+    price *= multiplier;
+  }
+  
+  return parseFloat(price);
 }
 
 /** Get the effective value of a card (market price × PSA multiplier if graded) */
