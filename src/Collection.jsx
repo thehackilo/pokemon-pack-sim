@@ -107,7 +107,7 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
   return (
     <div style={{ width: "100%", maxWidth: 1100, animation: "slideUp .4s ease-out" }}>
       {/* Portfolio Summary */}
-      <div style={{
+      <div className="mobile-summary-box" style={{
         display: "flex", flexWrap: "wrap", gap: 24, justifyContent: "center", alignItems: "center",
         padding: "24px 32px", marginBottom: 24, borderRadius: 16,
         background: "linear-gradient(135deg,#ffffff08,#ffffff04)",
@@ -134,7 +134,7 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
       </div>
 
       {/* Filters & Automation */}
-      <div className="mobile-stack" style={{ display: "flex", flexWrap: "wrap", gap: 20, marginBottom: 24 }}>
+      <div className="mobile-filter-stack" style={{ display: "flex", flexWrap: "wrap", gap: 20, marginBottom: 24 }}>
         
         {/* Filters Left Side */}
         <div className="mobile-panel-pd" style={{
@@ -214,7 +214,7 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
         </div>
 
         {/* Auto Sell Automation Panel Right Side */}
-        <div style={{
+        <div className="mobile-panel-pd" style={{
           flex: "1 1 300px", padding: "20px 24px", borderRadius: 16,
           background: "linear-gradient(135deg,#ef444408,#ef444404)",
           border: `1px solid ${autoSellThreshold > 0 ? "#ef444444" : "#ef444415"}`,
