@@ -418,7 +418,7 @@ const SETS = [
     gradientTo: "#3d3d0d",
     packGradient: "linear-gradient(145deg,#222,#444,#000)", // Dark premium 1st ed look
     description: "Ultra-rare 1st Edition print run. The holy grail of collecting.",
-    packPrice: 1000,
+    packPrice: 5000,
     is1stEdition: true,
   },
 ];
