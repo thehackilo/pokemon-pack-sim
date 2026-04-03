@@ -1059,7 +1059,7 @@ export default function App(){
     if (autoSellThreshold > 0) {
       let autoSellEarnings = 0;
       newCards.forEach(c => {
-        const price = getMarketPrice(c);
+        const price = getCardValue(c);
         if (price < autoSellThreshold && price > 0) {
           autoSellEarnings += price;
         } else {
@@ -1110,7 +1110,7 @@ export default function App(){
     if (cardsArray.length === 0) return;
     sfx.init();
     sfx.bulkSell();
-    const totalEarned = cardsArray.reduce((s, c) => s + getMarketPrice(c), 0);
+    const totalEarned = cardsArray.reduce((s, c) => s + getCardValue(c), 0);
     const uidsToRemove = new Set(cardsArray.map(c => c.uid));
     setCollection(prev => prev.filter(c => !uidsToRemove.has(c.uid)));
     setWallet(curr => {

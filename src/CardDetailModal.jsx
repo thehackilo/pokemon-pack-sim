@@ -20,7 +20,7 @@ export default function CardDetailModal({ card, onSell, onClose }) {
 
   const handleSell = () => {
     if (!onSell) return;
-    onSell(card, getMarketPrice(card));
+    onSell(card, getCardValue(card));
     handleClose();
   };
 

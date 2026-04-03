@@ -49,16 +49,16 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
     const thresh = parseFloat(thresholdInput);
     if (isNaN(thresh) || thresh <= 0) return [];
     return collection.filter(c => {
-      const p = getMarketPrice(c);
+      const p = getCardValue(c);
       return p < thresh && p > 0;
     });
   }, [collection, thresholdInput]);
 
   const bulkSellTotal = useMemo(() =>
-    bulkSellCards.reduce((s, c) => s + getMarketPrice(c), 0), [bulkSellCards]);
+    bulkSellCards.reduce((s, c) => s + getCardValue(c), 0), [bulkSellCards]);
 
   const handleSell = (card) => {
-    const price = getMarketPrice(card);
+    const price = getCardValue(card);
     setSellAnim(card.uid);
     setTimeout(() => {
       onSell(card, price);
