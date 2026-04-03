@@ -3,7 +3,7 @@ import { RC, TC, getMarketPrice, getCardValue,
   PSA_GRADE_LABELS, PSA_GRADE_COLORS, PSA_MULTIPLIERS } from "./constants.js";
 import SlabHeader from "./SlabHeader.jsx";
 
-export default function CardDetailModal({ card, onClose }) {
+export default function CardDetailModal({ card, onSell, onClose }) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [entering, setEntering] = useState(true);
   const [exiting, setExiting] = useState(false);
@@ -16,6 +16,12 @@ export default function CardDetailModal({ card, onClose }) {
   const handleClose = () => {
     setExiting(true);
     setTimeout(onClose, 300);
+  };
+
+  const handleSell = () => {
+    if (!onSell) return;
+    onSell(card, getMarketPrice(card));
+    handleClose();
   };
 
   if (!card) return null;
@@ -251,12 +257,27 @@ export default function CardDetailModal({ card, onClose }) {
           <div style={{
             padding: "10px 16px 12px", borderTop: "1px solid #ffffff0a",
             display: "flex", justifyContent: "space-between", alignItems: "center",
+            gap: 12,
           }}>
-            <div style={{ fontSize: 9, color: "#fff2" }}>Click card to flip · Click outside to close</div>
+            <div style={{ fontSize: 9, color: "#fff2", flex: 1 }}>Tap card to flip · Click outside to close</div>
+            
+            {onSell && (
+              <button onClick={handleSell}
+                style={{
+                  padding: "8px 16px", borderRadius: 10, border: "none",
+                  background: "linear-gradient(135deg,#22c55e,#15803d)",
+                  color: "#fff", fontSize: 11, fontWeight: 900, cursor: "pointer",
+                  boxShadow: "0 4px 12px rgba(34, 197, 94, 0.3)",
+                  letterSpacing: 0.5, transition: "all .2s",
+                }}>
+                SELL CARD FOR ${effectivePrice.toFixed(2)}
+              </button>
+            )}
+
             <button onClick={handleClose}
               style={{
-                padding: "6px 16px", borderRadius: 8, border: "1px solid #ffffff15",
-                background: "#ffffff08", color: "#fff8", fontSize: 10, cursor: "pointer",
+                padding: "8px 16px", borderRadius: 10, border: "1px solid #ffffff15",
+                background: "#ffffff08", color: "#fff8", fontSize: 11, cursor: "pointer",
                 fontWeight: 600, transition: "all .2s",
               }}>CLOSE</button>
           </div>

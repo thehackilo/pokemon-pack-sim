@@ -1233,6 +1233,11 @@ export default function App(){
           .mobile-card-size .info-section { display: none !important; }
           .mobile-card-size .slab-footer { display: none !important; }
 
+          /* Restore info section ONLY in Collection & Grading where buttons are needed */
+          .collection-tab .mobile-card-size .info-section,
+          .grading-card .info-section { display: block !important; padding: 6px !important; }
+          .grading-card .slab-footer { display: block !important; }
+
           /* Special override for Grading Tab to show the button */
           .grading-card { width: 100% !important; height: auto !important; min-height: 200px !important; }
           .grading-card .info-section { display: block !important; padding: 10px !important; }
@@ -1390,9 +1395,11 @@ export default function App(){
           </div></div>)}
 
       {activeTab === "collection" && (
-        <Collection collection={collection} onSell={handleSell} onBulkSell={handleBulkSell} wallet={wallet} sets={SETS}
-          autoSellThreshold={autoSellThreshold} onAutoSellThresholdChange={(val) => { setAutoSellThreshold(val); syncAutoSellThreshold(val); }}
-          onCardClick={setDetailCard}/>
+        <div className="collection-tab" style={{width:"100%"}}>
+          <Collection collection={collection} onSell={handleSell} onBulkSell={handleBulkSell} wallet={wallet} sets={SETS}
+            autoSellThreshold={autoSellThreshold} onAutoSellThresholdChange={(val) => { setAutoSellThreshold(val); syncAutoSellThreshold(val); }}
+            onCardClick={setDetailCard}/>
+        </div>
       )}
 
       {activeTab === "grading" && (
@@ -1400,7 +1407,7 @@ export default function App(){
           onSubmitGrading={handleSubmitGrading} onCardClick={setDetailCard}/>
       )}
 
-      {detailCard && <CardDetailModal card={detailCard} onClose={() => setDetailCard(null)} />}
+      {detailCard && <CardDetailModal card={detailCard} onSell={handleSell} onClose={() => setDetailCard(null)} />}
       {showLeaderboard && <LeaderboardModal onClose={() => setShowLeaderboard(false)} />}
       {showProfileModal && <ProfileModal currentName={username} onUpdate={setUsername} onClose={() => setShowProfileModal(false)} />}
 
