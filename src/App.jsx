@@ -4,6 +4,7 @@ import CardDetailModal from "./CardDetailModal.jsx";
 import GradingTab from "./GradingTab.jsx";
 import AuthOverlay from "./AuthOverlay.jsx";
 import LeaderboardModal from "./LeaderboardModal.jsx";
+import ProfileModal from "./ProfileModal.jsx";
 import { supabase } from "./supabaseClient.js";
 import { TC, RC, getMarketPrice, generateCardProperties, calculatePSAGrade,
   GRADING_COST, GRADING_DURATION_MS } from "./constants.js";
@@ -828,6 +829,8 @@ let uidCounter = 0;
 
 export default function App(){
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [username, setUsername] = useState("");
   const [user, setUser] = useState(null);
   const userRef = useRef(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -892,6 +895,7 @@ export default function App(){
         setWallet(Number(pData.wallet));
         setStats(pData.stats);
         setAutoSellThreshold(Number(pData.auto_sell_threshold));
+        setUsername(pData.username || "");
       } else {
         // Create initial profile if it doesn't exist yet
         await supabase.from('profiles').insert({
@@ -1234,9 +1238,9 @@ export default function App(){
                   🏆 LEADERBOARD
                 </button>
                 <div style={{ height: 12, width: 1, background: '#fff2' }} />
-                <span style={{background: "#ffffff11", padding: "4px 8px", borderRadius: 12}}>
-                  👤 {user.id === "guest" ? "Guest Vault" : user.email}
-                </span>
+                <button onClick={() => setShowProfileModal(true)} style={{background: "#ffffff11", padding: "4px 10px", borderRadius: 12, border: "none", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 6}}>
+                  👤 {user.id === "guest" ? "Guest Vault" : (username || user.email)}
+                </button>
                 <button onClick={handleSignOut} style={{background: "none", border: "none", color: "#fca5a5", fontSize: 10, cursor: "pointer", textDecoration: "underline"}}>Log Out</button>
               </div>
             )}
@@ -1340,6 +1344,7 @@ export default function App(){
 
       {detailCard && <CardDetailModal card={detailCard} onClose={() => setDetailCard(null)} />}
       {showLeaderboard && <LeaderboardModal onClose={() => setShowLeaderboard(false)} />}
+      {showProfileModal && <ProfileModal currentName={username} onUpdate={setUsername} onClose={() => setShowProfileModal(false)} />}
 
       <div style={{position:"fixed",bottom:10,left:"50%",transform:"translateX(-50%)",fontSize:9,color:"#fff15",letterSpacing:1}}>
         🔊 Sound on for full experience</div>
