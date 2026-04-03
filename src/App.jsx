@@ -1035,10 +1035,14 @@ export default function App(){
   const syncWalletTransaction = async (amount, newStats) => {
     const u = userRef.current;
     if (u && u.id !== "guest") {
-      const { error } = await supabase.rpc('process_transaction', { p_amount: amount, p_stats: newStats });
-      if (error) {
-        console.error("Secure sync failed:", error);
-        refreshProfile(); 
+      try {
+        const { error } = await supabase.rpc('process_transaction', { p_amount: amount, p_stats: newStats });
+        if (error) {
+           console.warn("RPC Sync failed, falling back to basic sync:", error);
+           syncWalletAndStats(wallet + amount, newStats);
+        }
+      } catch(err) {
+        syncWalletAndStats(wallet + amount, newStats);
       }
     }
   };
