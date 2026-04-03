@@ -698,30 +698,58 @@ function PackWrapper({onOpen, setInfo}){
   const hRef=useRef(null);const pRef=useRef(0);const tRef=useRef(0);const dRef=useRef(false);
   const accent = setInfo.accentColor;
 
-  const go=()=>{
-    sfx.init();setHold(true);
-    if(!dRef.current){sfx.startDrone();dRef.current=true;}
-    const tick=()=>{
-      const spd=.7+(pRef.current/100)*2.8;
-      pRef.current=Math.min(pRef.current+spd,100);setTp(pRef.current);
-      const p=pRef.current/100;sfx.updateDrone(p);
-      tRef.current++;if(tRef.current%Math.max(2,12-Math.floor(p*11))===0)sfx.tear(p);
-      setWb(Math.sin(Date.now()*.02)*p*5);
-      if(pRef.current>=100){sfx.stopDrone();sfx.tearDone();dRef.current=false;
-        setTimeout(()=>onOpen(),350);return;}
-      hRef.current=requestAnimationFrame(tick);};
-    hRef.current=requestAnimationFrame(tick);};
+  const go=(e)=>{
+    if(e) e.preventDefault();
+    if(hold) return;
+    try {
+      sfx.init();
+      setHold(true);
+      if(!dRef.current){
+        try { sfx.startDrone(); } catch(e) {}
+        dRef.current=true;
+      }
+      const tick=()=>{
+        if(!pRef.current) pRef.current=0;
+        const spd=.8+(pRef.current/100)*2.6;
+        pRef.current=Math.min(pRef.current+spd,100);
+        setTp(pRef.current);
+        
+        try {
+          const p=pRef.current/100;
+          sfx.updateDrone(p);
+          tRef.current++;
+          if(tRef.current % Math.max(2, 12-Math.floor(p*11)) === 0) sfx.tear(p);
+          setWb(Math.sin(Date.now()*.02)*p*5);
+        } catch(e) {}
+        
+        if(pRef.current>=100){
+          try { sfx.stopDrone(); sfx.tearDone(); } catch(e){}
+          dRef.current=false;
+          setTimeout(()=>onOpen(),350);
+          return;
+        }
+        hRef.current=requestAnimationFrame(tick);
+      };
+      hRef.current=requestAnimationFrame(tick);
+    } catch(err) {
+      onOpen();
+    }
+  };
 
   const no=()=>{
     if(hRef.current)cancelAnimationFrame(hRef.current);setHold(false);
-    if(pRef.current<100){sfx.stopDrone();dRef.current=false;
+    if(pRef.current<100){
+      try { sfx.stopDrone(); } catch(e) {}
+      dRef.current=false;
       const snap=()=>{pRef.current=Math.max(pRef.current-4,0);setTp(pRef.current);setWb(0);
-        if(pRef.current>0)requestAnimationFrame(snap);};snap();}};
+        if(pRef.current>0)requestAnimationFrame(snap);};snap();
+    }
+  };
 
   return(
     <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:24}}>
       <div onMouseDown={go} onMouseUp={no} onMouseLeave={no}
-        onTouchStart={() => go()} onTouchEnd={no} onTouchCancel={no}
+        onTouchStart={go} onTouchEnd={no} onTouchCancel={no}
         style={{width:230,height:330,borderRadius:14,position:"relative",cursor:"pointer",
           background:setInfo.packGradient,
           boxShadow:hold?`0 0 ${20+tp*.5}px ${accent}55,0 0 ${40+tp*1.2}px ${accent}22,0 8px 40px #0008`
@@ -891,6 +919,7 @@ export default function App(){
   const [user, setUser] = useState(null);
   const userRef = useRef(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [isOpening, setIsOpening] = useState(false);
 
   // Keep references to prevent stale closures in sync helpers
   useEffect(() => { userRef.current = user; }, [user]);
@@ -1003,10 +1032,14 @@ export default function App(){
   };
 
   // Sync Helpers
-  const syncWalletAndStats = (newWallet, newStats) => {
+  const syncWalletTransaction = async (amount, newStats) => {
     const u = userRef.current;
     if (u && u.id !== "guest") {
-      supabase.from('profiles').update({ wallet: newWallet, stats: newStats }).eq('id', u.id).then();
+      const { error } = await supabase.rpc('process_transaction', { p_amount: amount, p_stats: newStats });
+      if (error) {
+        console.error("Secure sync failed:", error);
+        refreshProfile(); 
+      }
     }
   };
 
