@@ -137,7 +137,7 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
       <div className="mobile-stack" style={{ display: "flex", flexWrap: "wrap", gap: 20, marginBottom: 24 }}>
         
         {/* Filters Left Side */}
-        <div style={{
+        <div className="mobile-panel-pd" style={{
           flex: "2 1 400px", padding: "20px 24px", borderRadius: 16,
           background: "linear-gradient(135deg,#ffffff06,#ffffff03)",
           border: "1px solid #ffffff0a",
@@ -159,8 +159,8 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
           {/* Rarity filter pills */}
           <div style={{ marginBottom: 16 }}>
             <div style={{ fontSize: 11, color: "#fff4", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8, fontWeight: 700 }}>Filter by Rarity</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              <button onClick={() => setFilterRarity("all")} style={{
+            <div className="mobile-scroll-row" style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              <button className="mobile-btn-pill" onClick={() => setFilterRarity("all")} style={{
                 ...pillStyle,
                 fontSize: 12, padding: "6px 14px",
                 background: filterRarity === "all" ? "#ffffff18" : "#ffffff08",
@@ -171,7 +171,7 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
                 const count = rarityCounts[key] || 0;
                 if (count === 0) return null;
                 return (
-                  <button key={key} onClick={() => setFilterRarity(filterRarity === key ? "all" : key)} style={{
+                  <button key={key} className="mobile-btn-pill" onClick={() => setFilterRarity(filterRarity === key ? "all" : key)} style={{
                     ...pillStyle,
                     fontSize: 12, padding: "6px 14px",
                     background: filterRarity === key ? `${val.c}22` : "#ffffff08",
@@ -187,8 +187,8 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
           {/* Set filter pills */}
           <div>
             <div style={{ fontSize: 11, color: "#fff4", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8, fontWeight: 700 }}>Filter by Set</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              <button onClick={() => setFilterSet("all")} style={{
+            <div className="mobile-scroll-row" style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              <button className="mobile-btn-pill" onClick={() => setFilterSet("all")} style={{
                 ...pillStyle,
                 fontSize: 12, padding: "6px 14px",
                 background: filterSet === "all" ? "#ffffff18" : "#ffffff08",
@@ -199,7 +199,7 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
                 const s = sets.find(x => x.id === sid);
                 const count = setCounts[sid] || 0;
                 return (
-                  <button key={sid} onClick={() => setFilterSet(filterSet === sid ? "all" : sid)} style={{
+                  <button key={sid} className="mobile-btn-pill" onClick={() => setFilterSet(filterSet === sid ? "all" : sid)} style={{
                     ...pillStyle,
                     fontSize: 12, padding: "6px 14px",
                     background: filterSet === sid ? `${s?.accentColor || "#888"}22` : "#ffffff08",

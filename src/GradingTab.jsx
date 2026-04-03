@@ -58,7 +58,7 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
   return (
     <div style={{ width: "100%", maxWidth: 1100, animation: "slideUp .4s ease-out" }}>
       {/* Header */}
-      <div style={{
+      <div className="mobile-h1" style={{
         textAlign: "center", marginBottom: 32, padding: "32px 24px",
         background: "linear-gradient(135deg,#1a103008,#FFD70008)",
         borderRadius: 24, border: "1px solid #FFD70015", boxShadow: "0 8px 32px #FFD70008"
@@ -66,11 +66,11 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
         <div style={{ fontSize: 28, fontWeight: 900, color: "#FFD700", letterSpacing: 3, marginBottom: 12 }}>
           ⚡ CARD GRADING CENTER
         </div>
-        <div style={{ fontSize: 15, color: "#fff8", maxWidth: 600, margin: "0 auto", lineHeight: 1.5 }}>
+        <div className="mobile-hide" style={{ fontSize: 15, color: "#fff8", maxWidth: 600, margin: "0 auto", lineHeight: 1.5 }}>
           Submit cards for professional grading. Each submission costs <strong style={{ color: "#FFD700" }}>${GRADING_COST}</strong> and takes 10 minutes.
           Graded cards receive a PSA-style grade that multiplies their market value.
         </div>
-        <div style={{
+        <div className="mobile-scroll-row" style={{
           display: "flex", justifyContent: "center", gap: 16, marginTop: 14, flexWrap: "wrap",
         }}>
           {[10,9,8,7,6,5].map(g => (

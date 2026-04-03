@@ -558,7 +558,7 @@ function SetSelector({onSelect, currentSetId}) {
         <div style={{fontSize:13,color:"#fff3",letterSpacing:4,textTransform:"uppercase",marginBottom:8}}>Select a Set</div>
       </div>
       
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))",gap:16,width:"100%",padding:"0 12px"}}>
+      <div className="mobile-set-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))",gap:16,width:"100%",padding:"0 12px"}}>
         {SETS.map((set) => {
           const isHovered = hovered === set.id;
           const isActive = currentSetId === set.id;
@@ -567,6 +567,7 @@ function SetSelector({onSelect, currentSetId}) {
               onClick={() => onSelect(set)}
               onMouseEnter={() => {setHovered(set.id); sfx.init(); sfx.hover();}}
               onMouseLeave={() => setHovered(null)}
+              className="mobile-set-card"
               style={{
                 cursor:"pointer",
                 background: isHovered 
@@ -970,6 +971,15 @@ export default function App(){
           .mobile-tabs { width: 100%; justify-content: center; flex-wrap: wrap; gap: 4px !important; }
           .mobile-tabs button { flex: 1 1 30%; padding: 8px 6px !important; font-size: 12px !important; }
           .mobile-header-txt { font-size: 18px !important; }
+          .mobile-hide { display: none !important; }
+          .mobile-h1 { padding: 16px !important; margin-bottom: 16px !important; }
+          .mobile-h1 > div:first-child { font-size: 20px !important; letter-spacing: 1px !important; }
+          .mobile-set-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; padding: 0 4px !important; }
+          .mobile-set-card { padding: 10px 8px !important; }
+          .mobile-scroll-row { flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 8px !important; justify-content: flex-start !important; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+          .mobile-scroll-row::-webkit-scrollbar { display: none; }
+          .mobile-btn-pill { padding: 6px 12px !important; font-size: 11px !important; white-space: nowrap !important; }
+          .mobile-panel-pd { padding: 12px !important; flex: 1 1 100% !important; }
         }
       `}</style>
 
