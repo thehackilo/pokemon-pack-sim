@@ -721,7 +721,7 @@ function PackWrapper({onOpen, setInfo}){
   return(
     <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:24}}>
       <div onMouseDown={go} onMouseUp={no} onMouseLeave={no}
-        onTouchStart={e=>{e.preventDefault();go();}} onTouchEnd={no} onTouchCancel={no}
+        onTouchStart={() => go()} onTouchEnd={no} onTouchCancel={no}
         style={{width:230,height:330,borderRadius:14,position:"relative",cursor:"pointer",
           background:setInfo.packGradient,
           boxShadow:hold?`0 0 ${20+tp*.5}px ${accent}55,0 0 ${40+tp*1.2}px ${accent}22,0 8px 40px #0008`
