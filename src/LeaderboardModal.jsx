@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "./supabaseClient";
+import PublicVaultModal from "./PublicVaultModal.jsx";
 
 export default function LeaderboardModal({ onClose }) {
   const [leaders, setLeaders] = useState([]);
@@ -7,6 +8,7 @@ export default function LeaderboardModal({ onClose }) {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [showVault, setShowVault] = useState(null); // { userId, username, totalValue }
 
   const fetchLeaders = useCallback(async (isAuto = false) => {
     if (!isAuto) setRefreshing(true);
@@ -48,6 +50,11 @@ export default function LeaderboardModal({ onClose }) {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
         }
+        .leaderboard-row:hover {
+          background: rgba(255, 255, 255, 0.08) !important;
+          transform: translateX(4px);
+          cursor: pointer;
+        }
       `}</style>
       
       <div style={{
@@ -56,6 +63,16 @@ export default function LeaderboardModal({ onClose }) {
         borderRadius: 28, border: '1px solid #ffffff15',
         boxShadow: '0 24px 80px #000', padding: 32, position: 'relative'
       }}>
+        {/* Navigation back from Vault handled inside PublicVaultModal */}
+        {showVault && (
+          <PublicVaultModal 
+            userId={showVault.userId} 
+            username={showVault.username} 
+            totalValue={showVault.totalValue}
+            onClose={() => setShowVault(null)} 
+          />
+        )}
+
         <button onClick={onClose} style={{
           position: 'absolute', top: 24, right: 24, background: 'none', border: 'none',
           color: '#fff4', fontSize: 24, cursor: 'pointer', zIndex: 10
@@ -103,15 +120,20 @@ export default function LeaderboardModal({ onClose }) {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ fontSize: 10, color: '#fff2', textAlign: 'center', marginBottom: 8, letterSpacing: 1 }}>TAP A TRAINER TO VIEW VAULT</div>
             {leaders.map((user, i) => (
-              <div key={i} style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '18px 24px', borderRadius: 20,
-                background: i === 0 ? 'linear-gradient(90deg, #FFD70015, transparent)' : '#ffffff03',
-                border: i === 0 ? '1px solid #FFD70033' : '1px solid #ffffff06',
-                transform: i === 0 ? 'scale(1.02)' : 'none',
-                transition: 'all 0.3s ease'
-              }}>
+              <div 
+                key={i} 
+                className="leaderboard-row"
+                onClick={() => setShowVault({ userId: user.user_id, username: user.username, totalValue: user.total_value })}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '18px 24px', borderRadius: 20,
+                  background: i === 0 ? 'linear-gradient(90deg, #FFD70015, transparent)' : '#ffffff03',
+                  border: i === 0 ? '1px solid #FFD70033' : '1px solid #ffffff06',
+                  transition: 'all 0.3s ease'
+                }}
+              >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
                   <div style={{ 
                     width: 32, height: 32, borderRadius: '50%', 

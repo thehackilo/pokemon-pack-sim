@@ -31,12 +31,13 @@ ALTER TABLE cards ENABLE ROW LEVEL SECURITY;
 -- 4. NEW: Support for Username and Leaderboard (Required for newest update)
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS username TEXT;
 
--- Function to calculate leaderboard data efficiently (V2: Includes PSA Multipliers)
+-- Function to calculate leaderboard data efficiently (V2: Includes PSA Multipliers + user_id)
 CREATE OR REPLACE FUNCTION get_leaderboard()
-RETURNS TABLE (username TEXT, total_value NUMERIC) AS $$
+RETURNS TABLE (user_id UUID, username TEXT, total_value NUMERIC) AS $$
 BEGIN
   RETURN QUERY
   SELECT 
+    p.id as user_id,
     COALESCE(p.username, 'Anonymous Trainer') as username,
     SUM(
       (
