@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, memo } from "react";
 import Collection from "./Collection.jsx";
 import CardDetailModal from "./CardDetailModal.jsx";
 import GradingTab from "./GradingTab.jsx";
@@ -338,7 +338,7 @@ function ScreenFlash({color,active}){
 /* ═══════════════════════════════════════════════════
    CARD COMPONENT — shows actual TCG card images
    ═══════════════════════════════════════════════════ */
-function PokemonCard({pokemon,revealed,index,onClick,isLast,onFlash,onDetailClick}){
+const PokemonCard = memo(function PokemonCard({pokemon,revealed,index,onClick,isLast,onFlash,onDetailClick}){
   const[imgOk,setImgOk]=useState(false);
   const[hover,setHover]=useState({x:0,y:0});
   const[showP,setShowP]=useState(false);
@@ -449,7 +449,7 @@ function PokemonCard({pokemon,revealed,index,onClick,isLast,onFlash,onDetailClic
       </div>
     </div>
   );
-}
+});
 
 /* ═══════════════════════════════════════════════════
    PACK WRAPPER — themed per set
@@ -963,10 +963,18 @@ export default function App(){
         .shakeAnim{animation:shake .5s ease-out}
         @keyframes shake{0%,100%{transform:translateX(0)}10%{transform:translateX(-6px)}20%{transform:translateX(5px)}30%{transform:translateX(-4px)}40%{transform:translateX(3px)}50%{transform:translateX(-2px)}}
         button:hover{filter:brightness(1.15)!important}button:active{transform:scale(.97)!important}
+        @media(max-width: 768px) {
+          .mobile-stack { flex-direction: column !important; align-items: stretch !important; gap: 16px; padding: 12px !important; }
+          .mobile-stack > div { align-items: center !important; text-align: center; }
+          .mobile-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important; gap: 10px !important; }
+          .mobile-tabs { width: 100%; justify-content: center; flex-wrap: wrap; gap: 4px !important; }
+          .mobile-tabs button { flex: 1 1 30%; padding: 8px 6px !important; font-size: 12px !important; }
+          .mobile-header-txt { font-size: 18px !important; }
+        }
       `}</style>
 
       {/* HEADER NAV BAR */}
-      <div style={{
+      <div className="mobile-stack" style={{
         position: "sticky", top: 0, zIndex: 100,
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "16px 24px", marginBottom: 24, 
@@ -977,7 +985,7 @@ export default function App(){
       }}>
         {/* App Title */}
         <div>
-          <h1 style={{fontSize:22,fontWeight:900,margin:0,letterSpacing:2,
+          <h1 className="mobile-header-txt" style={{fontSize:22,fontWeight:900,margin:0,letterSpacing:2,
             background:"linear-gradient(135deg,#FFD700,#FFA000,#FFD700,#FFE44D)",backgroundSize:"200% 100%",
             animation:"shimmer 3s ease-in-out infinite",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
             POKÉMON PACK SIM
@@ -988,7 +996,7 @@ export default function App(){
         </div>
 
         {/* Tabs */}
-        <div style={{display:"flex", gap: 8, background:"#ffffff08", borderRadius: 16, padding: 4}}>
+        <div className="mobile-tabs" style={{display:"flex", gap: 8, background:"#ffffff08", borderRadius: 16, padding: 4}}>
           {[
             {id:"open",label:"🎴 Open Packs"},
             {id:"collection",label:`📚 Collection (${collection.length})`},

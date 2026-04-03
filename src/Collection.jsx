@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { TC, RC, getMarketPrice, getCardValue, PSA_GRADE_COLORS, PSA_GRADE_LABELS } from "./constants.js";
 import SlabHeader from "./SlabHeader.jsx";
 
@@ -11,6 +11,10 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
   const [hoveredCard, setHoveredCard] = useState(null);
   const [thresholdInput, setThresholdInput] = useState(autoSellThreshold > 0 ? autoSellThreshold.toString() : "");
   const [showBulkConfirm, setShowBulkConfirm] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(30);
+
+  // Reset pagination on filter change
+  useEffect(() => setVisibleCount(30), [sort, filterRarity, filterSet]);
 
   const filtered = useMemo(() => {
     let items = [...collection];
@@ -98,6 +102,8 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
     return counts;
   }, [collection]);
 
+  const visibleCards = filtered.slice(0, visibleCount);
+
   return (
     <div style={{ width: "100%", maxWidth: 1100, animation: "slideUp .4s ease-out" }}>
       {/* Portfolio Summary */}
@@ -128,7 +134,7 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
       </div>
 
       {/* Filters & Automation */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 20, marginBottom: 24 }}>
+      <div className="mobile-stack" style={{ display: "flex", flexWrap: "wrap", gap: 20, marginBottom: 24 }}>
         
         {/* Filters Left Side */}
         <div style={{
@@ -326,11 +332,11 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
           </div>
         </div>
       ) : (
-        <div style={{
+        <div className="mobile-grid" style={{
           display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(155px, 1fr))",
           gap: 12, padding: "0 4px"
         }}>
-          {filtered.map((card) => {
+          {visibleCards.map((card) => {
             const basePrice = getMarketPrice(card);
             const price = getCardValue(card);
             const rc = RC[card.rarity];
@@ -483,6 +489,19 @@ export default function Collection({ collection, onSell, onBulkSell, wallet, set
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Load More Button */}
+      {visibleCount < filtered.length && (
+        <div style={{ textAlign: "center", marginTop: 24 }}>
+          <button onClick={() => setVisibleCount(p => p + 30)} style={{
+            padding: "12px 32px", borderRadius: 24, border: "2px solid #ffffff22",
+            background: "#ffffff0a", color: "#fff", fontSize: 14, fontWeight: 700,
+            cursor: "pointer", transition: "all .2s", letterSpacing: 1
+          }}>
+            LOAD MORE CARDS ({(filtered.length - visibleCount)} remaining)
+          </button>
         </div>
       )}
     </div>

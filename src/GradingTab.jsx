@@ -7,6 +7,8 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
   const [hoveredCard, setHoveredCard] = useState(null);
   const [tick, setTick] = useState(0); // force re-render for timers
   const [sortOrder, setSortOrder] = useState("newest");
+  const [visibleGraded, setVisibleGraded] = useState(20);
+  const [visibleUngraded, setVisibleUngraded] = useState(20);
 
   // Tick every second for timer updates
   useEffect(() => {
@@ -29,6 +31,9 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
 
   const ungradedCards = useMemo(() =>
     [...collection.filter(c => !c.gradingStartTime && !c.psaGrade)].reverse().sort(sortingFn), [collection, sortOrder]);
+    
+  const visibleGradedCards = gradedCards.slice(0, visibleGraded);
+  const visibleUngradedCards = ungradedCards.slice(0, visibleUngraded);
 
   const canAfford = wallet >= GRADING_COST;
 
@@ -101,7 +106,7 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
             textTransform: "uppercase", marginBottom: 16 }}>
             ⏳ Currently Grading ({gradingCards.length})
           </div>
-          <div style={{
+          <div className="mobile-grid" style={{
             display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(165px, 1fr))",
             gap: 12,
           }}>
@@ -164,11 +169,11 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
             textTransform: "uppercase", marginBottom: 12 }}>
             ✓ Graded Cards ({gradedCards.length})
           </div>
-          <div style={{
+          <div className="mobile-grid" style={{
             display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(175px, 1fr))",
             gap: 14,
           }}>
-            {gradedCards.map(card => {
+            {visibleGradedCards.map(card => {
               const grade = card.psaGrade;
               const gradeColor = PSA_GRADE_COLORS[grade];
               const gradeLabel = PSA_GRADE_LABELS[grade];
@@ -243,6 +248,14 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
               );
             })}
           </div>
+          {visibleGraded < gradedCards.length && (
+            <div style={{ textAlign: "center", marginTop: 20 }}>
+              <button onClick={() => setVisibleGraded(p => p + 20)} style={{
+                padding: "8px 24px", borderRadius: 20, border: "1px solid #ffffff22",
+                background: "#ffffff0a", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer"
+              }}>LOAD MORE ({gradedCards.length - visibleGraded})</button>
+            </div>
+          )}
         </div>
       )}
 
@@ -269,11 +282,11 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
             </div>
           </div>
         ) : (
-          <div style={{
+          <div className="mobile-grid" style={{
             display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(155px, 1fr))",
             gap: 12,
           }}>
-            {ungradedCards.map(card => {
+            {visibleUngradedCards.map(card => {
               const price = getMarketPrice(card);
               const rc = RC[card.rarity];
               const grade = card.properties?.overallGrade;
@@ -344,6 +357,15 @@ export default function GradingTab({ collection, wallet, onSubmitGrading, onCard
               );
             })}
           </div>
+        )}
+        
+        {ungradedCards.length > 0 && visibleUngraded < ungradedCards.length && (
+            <div style={{ textAlign: "center", marginTop: 24 }}>
+              <button onClick={() => setVisibleUngraded(p => p + 20)} style={{
+                padding: "10px 24px", borderRadius: 20, border: "1px solid #ffffff22",
+                background: "#ffffff0a", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer"
+              }}>LOAD MORE UNGRADED ({ungradedCards.length - visibleUngraded})</button>
+            </div>
         )}
       </div>
     </div>
