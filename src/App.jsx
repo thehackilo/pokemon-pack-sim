@@ -14,7 +14,12 @@ import { TC, RC, getMarketPrice, generateCardProperties, calculatePSAGrade,
    ═══════════════════════════════════════════════════ */
 class SFX {
   constructor(){this.ctx=null;this.on=false;}
-  init(){if(this.on)return;try{this.ctx=new(window.AudioContext||window.webkitAudioContext)();this.on=true;}catch(e){}}
+  init(){
+    if(!this.on) {
+      try{this.ctx=new(window.AudioContext||window.webkitAudioContext)();this.on=true;}catch(e){}
+    }
+    if(this.ctx && this.ctx.state === "suspended") this.ctx.resume();
+  }
 
   noise(dur,vol=.15,freq=4000){
     if(!this.ctx)return;const b=this.ctx.createBuffer(1,this.ctx.sampleRate*dur,this.ctx.sampleRate);
@@ -1227,7 +1232,7 @@ export default function App(){
           .mobile-summary-box > div { min-width: 45% !important; }
           .mobile-summary-box > div:nth-child(even) { display: none !important; }
           .mobile-filter-stack { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; margin-bottom: 24px !important; width: 100% !important; box-sizing: border-box !important; }
-          .mobile-card-size { width: 100px !important; height: 140px !important; }
+          .mobile-card-size { width: 100px !important; height: auto !important; min-height: 140px !important; }
           .mobile-card-size .particles { display: none !important; }
           .mobile-card-size .info-section { display: none !important; }
           .mobile-card-size .slab-footer { display: none !important; }
