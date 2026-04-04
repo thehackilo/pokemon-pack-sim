@@ -6,7 +6,7 @@ import AuthOverlay from "./AuthOverlay.jsx";
 import LeaderboardModal from "./LeaderboardModal.jsx";
 import ProfileModal from "./ProfileModal.jsx";
 import { supabase } from "./supabaseClient.js";
-import { TC, RC, getMarketPrice, generateCardProperties, calculatePSAGrade,
+import { TC, RC, getMarketPrice, getCardValue, generateCardProperties, calculatePSAGrade,
   GRADING_COST, GRADING_DURATION_MS } from "./constants.js";
 
 /* ═══════════════════════════════════════════════════
